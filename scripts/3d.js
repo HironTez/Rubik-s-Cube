@@ -5,7 +5,7 @@ import { OrbitControls } from './otherScripts/OrbitControls.js';
 
 let RubiksCube = [],
     scene, camera, renderer, controls, mouse = { x: 0, y: 0, down: false },
-    intersected, oldIntersected, nimiCubesSides, oldIntersectedSide, cubeSideToRotate, sideGroup, absoluteAxises, history = [],
+    intersected, oldIntersected, oldIntersectedSide, cubeSideToRotate, sideGroup, absoluteAxises, history = [],
     rotate = { 'rotate': false, 'clockwise': true, 'axis': 'y' };
 const sides = ['r', 'l', 'u', 'd', 'f', 'b'],
     oppositeSides = ['lr', 'ud', 'fb'],
@@ -32,27 +32,28 @@ function init() {
 
     // cube
     const materials = {
-        'white': new THREE.MeshPhongMaterial({ color: 0xffffff }),
-        'green': new THREE.MeshPhongMaterial({ color: 0x00ff00 }),
-        'red': new THREE.MeshPhongMaterial({ color: 0xFF0000 }),
-        'blue': new THREE.MeshPhongMaterial({ color: 0x0000FF }),
-        'orange': new THREE.MeshPhongMaterial({ color: 0xdd5e00 }),
-        'yellow': new THREE.MeshPhongMaterial({ color: 0xffff00 })
+        'white': new THREE.MeshPhongMaterial({ color: 0xffffff, polygonOffset: true, polygonOffsetUnits: 1000 }),
+        'green': new THREE.MeshPhongMaterial({ color: 0x00ff00, polygonOffset: true, polygonOffsetUnits: 1000 }),
+        'red': new THREE.MeshPhongMaterial({ color: 0xFF0000, polygonOffset: true, polygonOffsetUnits: 1000 }),
+        'blue': new THREE.MeshPhongMaterial({ color: 0x0000FF, polygonOffset: true, polygonOffsetUnits: 1000 }),
+        'orange': new THREE.MeshPhongMaterial({ color: 0xdd5e00, polygonOffset: true, polygonOffsetUnits: 1000 }),
+        'yellow': new THREE.MeshPhongMaterial({ color: 0xffff00, polygonOffset: true, polygonOffsetUnits: 1000 }),
+        'gray': new THREE.MeshPhongMaterial({ color: 0xdddddd, polygonOffset: true, polygonOffsetUnits: 1000 })
     };
 
     const geometry = new THREE.BoxGeometry();
 
-    function createCube(position) {
+    function createCube(position, materials) {
         // const material = new THREE.MeshPhongMaterial({color: 0x00ff00, flatShading: true});
-        const cube = new THREE.Mesh(geometry, [materials['red'], materials['orange'], materials['white'], materials['yellow'], materials['green'], materials['blue']]);
+        const cube = new THREE.Mesh(geometry, materials); // [materials['red'], materials['orange'], materials['white'], materials['yellow'], materials['green'], materials['blue']]
         scene.add(cube);
         cube.position.set(...position);
 
         // Border
         const geo = new THREE.EdgesGeometry(cube.geometry);
         const mat = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1 });
+
         const wireframe = new THREE.LineSegments(geo, mat);
-        wireframe.renderOrder = 1; // make sure wireframes are rendered 2nd
         cube.add(wireframe);
 
         return cube;
@@ -85,9 +86,47 @@ function init() {
         [-1, -1, 1],
         [-1, -1, -1]
     ];
-    nimiCubesSides = { 0: { x: 0, y: 1.57, z: 0 }, 1: { x: 0, y: -1.57, z: 0 }, 2: { x: -1.57, y: 0, z: 0 }, 3: { x: 1.57, y: 0, z: 0 }, 4: { x: 0, y: 0, z: 0 }, 5: { x: 0, y: 3.14, z: 0 } };
-    for (let pos of cords) {
-        RubiksCube.push(createCube(pos));
+    const materialsNames = ['red', 'orange', 'white', 'yellow', 'green', 'blue'];
+    const materialKits = [
+        [0],
+        [1],
+        [2],
+        [3],
+        [4],
+        [5],
+        [0, 2],
+        [1, 3],
+        [0, 4],
+        [1, 5],
+        [0, 3],
+        [1, 2],
+        [0, 5],
+        [1, 4],
+        [2, 4],
+        [3, 5],
+        [2, 5],
+        [3, 4],
+        [0, 2, 4],
+        [0, 2, 5],
+        [0, 3, 4],
+        [1, 2, 4],
+        [0, 3, 5],
+        [1, 2, 5],
+        [1, 3, 4],
+        [1, 3, 5]
+    ];
+
+    // Generate parts of a cube
+    for (let i = 0; i < 26; i++) {
+        let pos = cords[i];
+        let materialsToApply = [materials['gray'], materials['gray'], materials['gray'], materials['gray'], materials['gray'], materials['gray']];
+        let materialKit = materialKits[i];
+        if (materialKit.length > 1) {
+            for (let i of materialKit) {
+                materialsToApply[i] = materials[materialsNames[i]];
+            }
+        } else materialsToApply[i] = materials[materialsNames[i]];
+        RubiksCube.push(createCube(pos, materialsToApply));
     }
 
     // lights
