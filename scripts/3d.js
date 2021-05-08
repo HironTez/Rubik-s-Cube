@@ -159,7 +159,7 @@ function init() {
     controls.dampingFactor = 0.05;
 
     controls.minDistance = 7;
-    controls.maxDistance = 30;
+    controls.maxDistance = 10;
 
     controls.mouseButtons = {
         RIGHT: THREE.MOUSE.ROTATE
@@ -196,22 +196,28 @@ function init() {
 
 function update() {
     if (rotate['rotate'] == true) {
+        let x = sideGroup.rotation.x + sideGroup.rotation.y + sideGroup.rotation.z;
+        // x must be greater than 0
+        x = x != 0? (x > 0? x : -x): x + 0.01;
         // Turning distance
-        let rad = THREE.Math.degToRad(90) / 50;
+        let rad = Math.sin(x * 2) / 3;
         // Determination of direction
         if (rotate['clockwise'] == false) rad = -rad;
-
+        
         // Rotate
         if (rotate['axis'] == 'x') sideGroup.rotateX(rad);
         else if (rotate['axis'] == 'y') sideGroup.rotateY(rad);
         else if (rotate['axis'] == 'z') sideGroup.rotateZ(rad);
 
-        // if the sides are aligned
-        if (Number((sideGroup.rotation.x + (Math.PI / 2)).toFixed(2)) % 0.785 == 0 && rotate['axis'] == 'x') {
+        // If the sides are roughly aligned
+        if (Number((sideGroup.rotation.x + (Math.PI / 2)).toFixed(2)) % 1.57 == 0 && rotate['axis'] == 'x') {
+            sideGroup.rotation.x = closest(sideGroup.rotation.x, [Math.PI, Math.PI / 2, -Math.PI / 2, -Math.PI]) // Align exactly
+            finishRotate(); // Stop rotate
+        } else if (Number((sideGroup.rotation.y + (Math.PI / 2)).toFixed(2)) % 1.57 == 0 && rotate['axis'] == 'y') {
+            sideGroup.rotation.y = closest(sideGroup.rotation.y, [Math.PI, Math.PI / 2, -Math.PI / 2, -Math.PI])
             finishRotate();
-        } else if (Number((sideGroup.rotation.y + (Math.PI / 2)).toFixed(2)) % 0.785 == 0 && rotate['axis'] == 'y') {
-            finishRotate();
-        } else if (Number((sideGroup.rotation.z + (Math.PI / 2)).toFixed(2)) % 0.785 == 0 && rotate['axis'] == 'z') {
+        } else if (Number((sideGroup.rotation.z + (Math.PI / 2)).toFixed(2)) % 1.57 == 0 && rotate['axis'] == 'z') {
+            sideGroup.rotation.z = closest(sideGroup.rotation.z, [Math.PI, Math.PI / 2, -Math.PI / 2, -Math.PI])
             finishRotate();
         }
     }
