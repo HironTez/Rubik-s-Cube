@@ -1,6 +1,6 @@
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-}
+};
 
 function closest(needle, haystack) {
     return haystack.reduce((a, b) => {
@@ -11,6 +11,6 @@ function closest(needle, haystack) {
             return a > b ? a : b;
         } else {
             return bDiff < aDiff ? b : a;
-        }
+        };
     });
-}
+};
