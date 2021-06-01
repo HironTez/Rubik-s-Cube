@@ -3,6 +3,134 @@ body {
     margin: 0;
 }
 
+*:not(canvas) {
+    z-index: 1;
+}
+
+canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+}
+
 div#ui-container {
     position: absolute;
+}
+
+div#management-training {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+}
+
+div#management-training.active {
+    display: block;
+}
+
+div#management-training > img.mouse-icon {
+    display: none;
+    position: absolute;
+    left: 50vw;
+    top: 78vh;
+    transform: translate(-50%, -50%);
+}
+
+div#management-training > img.mouse-icon.active {
+    display: inline;
+}
+
+div#management-training > img.mouse-icon.move.active {
+    left: 45vw;
+    animation: move-mouse 1s ease-in-out infinite alternate;
+    -webkit-animation: move-mouse 1s ease-in-out infinite alternate;
+}
+
+div#management-training > img#cursor {
+    display: none;
+    position: absolute;
+    left: 40vw;
+    top: 50vh;
+    max-width: 5vw;
+    transform: translate(calc(-50% + 2.5vw), -50%);
+    -webkit-transform: translate(calc(-50% + 2.5vw), -50%);
+    -moz-transform: translate(calc(-50% + 2.5vw), -50%);
+    -ms-transform: translate(calc(-50% + 2.5vw), -50%);
+    -o-transform: translate(calc(-50% + 2.5vw), -50%);
+}
+
+div#management-training > img#cursor.active {
+    display: block;
+    animation: move-cursor 1s ease-in-out infinite alternate;
+    -webkit-animation: move-cursor 1s ease-in-out infinite alternate;
+}
+
+div#management-training > img#arrows {
+    display: none;
+    width: 40px;
+    position: absolute;
+    left: 50vw;
+    top: calc(78vh - 60px);
+    transform: translate(-50%);
+    -webkit-transform: translate(-50%);
+    -moz-transform: translate(-50%);
+    -ms-transform: translate(-50%);
+    -o-transform: translate(-50%);
+}
+
+div#management-training > img#arrows.active {
+    display: block;  
+}
+
+div#management-training > button#next {
+    display: none;
+    position: absolute;
+    left: 50%;
+    bottom: 5vh;
+    width: 100px;
+    height: 40px;
+    transform: translate(-50%);
+    -webkit-transform: translate(-50%);
+    -moz-transform: translate(-50%);
+    -ms-transform: translate(-50%);
+    -o-transform: translate(-50%);
+}
+
+div#management-training > button#next.active {
+    display: block;
+}
+
+@keyframes move-cursor {
+    0% {
+        left: 40%;
+    }
+    25% {
+        left: 40%;
+    }
+    75% {
+        left: 60%;
+    }
+    100% {
+        left: 60%;
+    }
+}
+
+@keyframes move-mouse {
+    0% {
+        left: 45%;
+    }
+    25% {
+        left: 45%;
+    }
+    75% {
+        left: 55%;
+    }
+    100% {
+        left: 55%;
+    }
 }

@@ -1,7 +1,7 @@
 import {rotate, rotateSide} from './rotate.js'
 
 
-let history = [];
+let history = [], solveProcess = false;
 const sides = ['r', 'l', 'u', 'd', 'f', 'b'], oppositeSides = ['lr', 'ud', 'fb'];
 
 // Add function for button "shuffle"
@@ -69,19 +69,19 @@ function scrambleToDisplayString(scramble) {
 /**
     @param {Array} formula
 */
-async function twistByFormula(formula, solve=false) {
+async function twistByFormula(formula) {
     for (let action of formula) {
         // Wait while something rotates
         while (rotate['rotate'] != false) await sleep(100);
         // If not double rotate
         if (!action[2]) {
-            rotateSide(action[0], action[1], solve);
+            rotateSide(action[0], action[1], solveProcess);
         }
         // If double rotate
         else if (action[2]) {
-            rotateSide(action[0], true, solve);
+            rotateSide(action[0], true, solveProcess);
             while (rotate['rotate'] != false) await sleep(100);
-            rotateSide(action[0], true, solve);
+            rotateSide(action[0], true, solveProcess);
         };
     };
 };
@@ -150,6 +150,8 @@ function AddMoveToHistory(move) {
 };
 
 async function solveCube() {
+    // Exit if cube is currently being solved
+    if (solveProcess == true) return;
     // Reverse history
     let formula;
     formula = history.reverse().slice();
@@ -159,11 +161,14 @@ async function solveCube() {
             move[1] = !move[1];
         };
     };
+    // Set a new value to the variable
+    solveProcess = true;
     // Rotates the sides of a cube using the formula
     await twistByFormula(formula, true);
-    // Clear history
+    // Clear history & reset variable
     history = [];
+    solveProcess = false;
 };
 
 
-export { AddMoveToHistory };
+export { AddMoveToHistory, solveCube };

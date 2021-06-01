@@ -4,28 +4,83 @@ import { OrbitControls } from './otherScripts/OrbitControls.js';
 import { rotateUpdate, onDocumentMouseDown, onDocumentTouchDown, onDocumentMouseMove, onDocumentTouchMove, onDocumentMouseUp } from './rotate.js';
 
 
-let RubiksCube = [], scene, camera, renderer, controls, sideGroup, absoluteAxises;
+let RubiksCube = [], scene, camera, renderer, controls, rotator, absoluteAxises;
 
 
 function init() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    camera = new THREE.PerspectiveCamera(50, 1, 1, 1000);
     camera.position.z = 5;
     scene.add(camera);
 
     renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight - 1);
-
+    const dimensions = aspectSize(window.innerWidth, window.innerHeight)
+    renderer.setSize(dimensions.width, dimensions.height);
+    
     window.onresize = () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(window.innerWidth, window.innerHeight - 1);
+        const newDimensions = aspectSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(newDimensions.width, newDimensions.height);
     };
 
     document.body.appendChild(renderer.domElement);
 
-    // cube
+    // lights
+    const dirLight1 = new THREE.DirectionalLight(0xBBBBBB);
+    dirLight1.position.set(0, 0, 1);
+    camera.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0x303030);
+    dirLight2.position.set(10, 10, 1);
+    camera.add(dirLight2);
+
+    const dirLight3 = new THREE.DirectionalLight(0x303030);
+    dirLight3.position.set(-10, -10, 1);
+    camera.add(dirLight3);
+
+    const dirLight4 = new THREE.DirectionalLight(0x303030);
+    dirLight4.position.set(10, -10, 1);
+    camera.add(dirLight4);
+
+    const dirLight5 = new THREE.DirectionalLight(0x303030);
+    dirLight5.position.set(-10, 10, 1);
+    camera.add(dirLight5);
+
+
+    // controls
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.rotate(-25 * Math.PI / 180, 20 * Math.PI / 180); // Set default rotation
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    controls.minDistance = 6;
+    controls.maxDistance = 10;
+
+    controls.mouseButtons = {
+        RIGHT: THREE.MOUSE.ROTATE
+    };
+    controls.touches = {
+        TWO: THREE.TOUCH.DOLLY_ROTATE
+    };
+
+    // Object for absolute positioning in space
+    absoluteAxises = new THREE.Vector3();
+
+    // Add events listeners
+    const canvas = renderer.domElement;
+    canvas.addEventListener('mousedown', onDocumentMouseDown);
+    canvas.addEventListener('touchstart', onDocumentTouchDown);
+    canvas.addEventListener('mousemove', onDocumentMouseMove);
+    canvas.addEventListener('touchmove', onDocumentTouchMove);
+    canvas.addEventListener('mouseup', onDocumentMouseUp);
+    canvas.addEventListener('touchend', onDocumentMouseUp);
+
+    initCube();
+};
+
+function initCube() {
+    // Cube materials
     const materials = {
         'white': new THREE.MeshPhongMaterial({ color: 0xffffff, polygonOffset: true, polygonOffsetUnits: 1000 }),
         'green': new THREE.MeshPhongMaterial({ color: 0x00ff00, polygonOffset: true, polygonOffsetUnits: 1000 }),
@@ -51,7 +106,8 @@ function init() {
         cube.add(wireFrame);
 
         return cube;
-    }
+    };
+
     const cords = [
         [1, 0, 0],
         [-1, 0, 0],
@@ -112,71 +168,38 @@ function init() {
 
     // Generate parts of a cube
     for (let i = 0; i < 26; i++) {
-        let pos = cords[i];
-        let materialsToApply = [materials['gray'], materials['gray'], materials['gray'], materials['gray'], materials['gray'], materials['gray']];
-        let materialKit = materialKits[i];
+        const pos = cords[i];
+        const materialsToApply = [materials['gray'], materials['gray'], materials['gray'], materials['gray'], materials['gray'], materials['gray']];
+        const materialKit = materialKits[i];
         if (materialKit.length > 1) {
-            for (let i of materialKit) {
+            for (const i of materialKit) {
                 materialsToApply[i] = materials[materialsNames[i]];
             };
         } else materialsToApply[i] = materials[materialsNames[i]];
         RubiksCube.push(createCube(pos, materialsToApply));
     };
 
-    // lights
-    const dirLight1 = new THREE.DirectionalLight(0xBBBBBB);
-    dirLight1.position.set(0, 0, 1);
-    camera.add(dirLight1);
-
-    const dirLight2 = new THREE.DirectionalLight(0x303030);
-    dirLight2.position.set(10, 10, 1);
-    camera.add(dirLight2);
-
-    const dirLight3 = new THREE.DirectionalLight(0x303030);
-    dirLight3.position.set(-10, -10, 1);
-    camera.add(dirLight3);
-
-    const dirLight4 = new THREE.DirectionalLight(0x303030);
-    dirLight4.position.set(10, -10, 1);
-    camera.add(dirLight4);
-
-    const dirLight5 = new THREE.DirectionalLight(0x303030);
-    dirLight5.position.set(-10, 10, 1);
-    camera.add(dirLight5);
-
-
-    // controls
-    controls = new OrbitControls(camera, renderer.domElement);
-    controls.rotate(-25 * Math.PI / 180, 20 * Math.PI / 180); // Set default rotation
-
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-
-    controls.minDistance = 7;
-    controls.maxDistance = 10;
-
-    controls.mouseButtons = {
-        RIGHT: THREE.MOUSE.ROTATE
-    };
-    controls.touches = {
-        TWO: THREE.TOUCH.DOLLY_ROTATE
-    };
-
-
     // Create object for rotate a group of objects
-    sideGroup = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0, transparent: true }));
-    sideGroup.scale.set(3.001, 3.001, 3.001);
-    scene.add(sideGroup);
+    rotator = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0, transparent: true }));
+    rotator.scale.set(3.001, 3.001, 3.001);
+    scene.add(rotator);
+};
 
-    // Object for absolute positioning in space
-    absoluteAxises = new THREE.Vector3();
-
-    // Add events listener
-    document.addEventListener('mousedown', onDocumentMouseDown);
-    document.addEventListener('touchstart', onDocumentTouchDown);
-    document.addEventListener('mousemove', onDocumentMouseMove);
-    document.addEventListener('touchmove', onDocumentTouchMove);
-    document.addEventListener('pointerup', onDocumentMouseUp);
+function aspectSize(availableWidth, availableHeight) {
+    const currentRatio = availableWidth / availableHeight;
+    if (currentRatio > 1) {
+        //then the height is the limiting factor
+        return {
+            width: availableHeight,
+            height: availableHeight
+        };
+    } else {
+        // the width is the limiting factor
+        return {
+            width: availableWidth,
+            height: availableWidth
+        };
+    };
 };
 
 
@@ -193,4 +216,4 @@ init();
 animate();
 
 
-export { camera, scene, RubiksCube, sideGroup, absoluteAxises };
+export { camera, scene, controls, RubiksCube, rotator, absoluteAxises, renderer };

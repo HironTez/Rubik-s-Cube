@@ -1,9 +1,9 @@
 import * as THREE from './otherScripts/three.module.js';
 
-import { camera, scene, RubiksCube, sideGroup, absoluteAxises } from './3d.js';
+import { camera, scene, RubiksCube, rotator, absoluteAxises, renderer } from './3d.js';
 import { AddMoveToHistory } from './auto.rotate.js';
 
-let mouse = { x: 0, y: 0, down: false }, intersected, cubeSideToRotate,
+let mouse = { x: 0, y: 0, down: false }, cubeSideToRotate,
 rotate = { 'rotate': false, 'clockwise': true, 'axis': 'y' },
 movement = {axisOfMovement: undefined, axis: 'y', oldPos: {x: null, y: null}, clockwise: true, cameraOnAxisZ: true}, speedRotate = 2.9;
 
@@ -17,7 +17,7 @@ document.querySelector('input#speed').addEventListener("change", function() {
 
 function rotateUpdate() {
     if (rotate['rotate'] == true) {
-        let x = sideGroup.rotation[rotate['axis']];
+        let x = rotator.rotation[rotate['axis']];
         // x must be greater than 0
         x = x != 0? (x > 0? x : -x): x + 0.01;
         // Turning distance
@@ -27,26 +27,26 @@ function rotateUpdate() {
         if (rotate['clockwise'] == false) rad = -rad;
         
         // Rotate
-        if (rotate['axis'] == 'x') sideGroup.rotateX(rad);
-        else if (rotate['axis'] == 'y') sideGroup.rotateY(rad);
-        else if (rotate['axis'] == 'z') sideGroup.rotateZ(rad);
+        if (rotate['axis'] == 'x') rotator.rotateX(rad);
+        else if (rotate['axis'] == 'y') rotator.rotateY(rad);
+        else if (rotate['axis'] == 'z') rotator.rotateZ(rad);
 
         // If the sides are roughly aligned
-        if (Number((sideGroup.rotation[rotate['axis']]).toFixed(2)) % 1.57 == 0) {
-            sideGroup.rotation[rotate['axis']] = closest(sideGroup.rotation[rotate['axis']], [-Math.PI, -Math.PI / 2, 0, Math.PI, Math.PI / 2]) // Align exactly
+        if (Number((rotator.rotation[rotate['axis']]).toFixed(2)) % 1.57 == 0) {
+            rotator.rotation[rotate['axis']] = closest(rotator.rotation[rotate['axis']], [-Math.PI, -Math.PI / 2, 0, Math.PI, Math.PI / 2]) // Align exactly
             finishRotate(); // Stop rotate
         };
     };
 };
 
-function setUpCubes(cube, center = false) {
+function setUpCubes(cube, center=false) {
     // Add mini cube to rotator
-    sideGroup.add(cube);
+    rotator.add(cube);
 
-    if (sideGroup.children.length == 9 || sideGroup.children.length == 8 && center) return true;
+    if (rotator.children.length == 9 || rotator.children.length == 8 && center) return true;
 };
 
-function rotateSide(side, clockwise = true, solve=false) {
+function rotateSide(side, clockwise=true, solve=false) {
     if (rotate['rotate'] == true) return;
 
     let rotation, axis;
@@ -96,7 +96,7 @@ function rotateSide(side, clockwise = true, solve=false) {
 
 function startRotate(clockwise, axis) {
     // Set up rotator
-    sideGroup.scale.set(1, 1, 1)
+    rotator.scale.set(1, 1, 1)
     rotate['axis'] = axis;
     rotate['clockwise'] = clockwise;
     // Start rotate
@@ -108,9 +108,9 @@ function finishRotate() {
     rotate['rotate'] = false;
 
     // Remove children from rotator
-    for (var i = sideGroup.children.length - 1; i >= 0; i--) {
+    for (var i = rotator.children.length - 1; i >= 0; i--) {
         // Get child
-        let obj = sideGroup.children[i];
+        let obj = rotator.children[i];
         
         // Get object absolute position
         let absolutePosition = obj.getWorldPosition(absoluteAxises);
@@ -125,14 +125,14 @@ function finishRotate() {
         obj.rotation.set(euler.x, euler.y, euler.z);
 
         // Remove object from parent and add to scene
-        sideGroup.remove(obj);
+        rotator.remove(obj);
         scene.add(obj);
     }
 
     // Remove rotator rotation
-    sideGroup.rotation.set(0, 0, 0);
+    rotator.rotation.set(0, 0, 0);
     // Enlarge rotator
-    sideGroup.scale.set(3.001, 3.001, 3.001);
+    rotator.scale.set(3.001, 3.001, 3.001);
 };
 
 
@@ -179,7 +179,7 @@ function onDocumentPointerMove(event) {
             if (deviationInY < 0) deviationInY =  -deviationInY
             if (deviationInX + deviationInY >= 0.005) {
                 movement.axisOfMovement = deviationInX > deviationInY? 'x': 'y';
-                const pos = intersected.position;
+                const pos = intersect[0].object.position;
                 const cameraOnAxisZ = ((camera.position.z > 0)? ((camera.position.x > 0)? (camera.position.z > camera.position.x): (camera.position.z > -camera.position.x)): ((camera.position.x > 0)? (-camera.position.z > camera.position.x): (-camera.position.z > -camera.position.x)));
 
                 // Detect which side need to rotate
@@ -247,7 +247,7 @@ function onDocumentPointerMove(event) {
                 };
 
                 // Allow to rotate side
-                sideGroup.scale.set(1, 1, 1);
+                rotator.scale.set(1, 1, 1);
                 movement['axis'] = axis;
                 movement['side'] = cubeSideToRotate;
                 movement['intersectSide'] = intersectSide;
@@ -267,9 +267,9 @@ function onDocumentPointerMove(event) {
             if (movement['intersectSide'] == 2 && ((!movement['cameraOnAxisZ'] && ((movement['axis'] == 'x' && camera.position.x > 0) || (movement['axis'] == 'z' && camera.position.x < 0)) || (movement['cameraOnAxisZ'] && camera.position.z < 0)))) rad = -rad;
             else if (movement['intersectSide'] == 3 && ((!movement['cameraOnAxisZ'] && ((movement['axis'] == 'z' && camera.position.x > 0) || (movement['axis'] == 'x' && camera.position.x < 0)) || (movement['cameraOnAxisZ'] && camera.position.z < 0)))) rad = -rad;
             // Rotate
-            if (movement['axis'] == 'x') sideGroup.rotateX(rad);
-            else if (movement['axis'] == 'y') sideGroup.rotateY(rad);
-            else if (movement['axis'] == 'z') sideGroup.rotateZ(rad);
+            if (movement['axis'] == 'x') rotator.rotateX(rad);
+            else if (movement['axis'] == 'y') rotator.rotateY(rad);
+            else if (movement['axis'] == 'z') rotator.rotateZ(rad);
 
             // Update old mouse position
             movement.oldPos.x = mouse.x;
@@ -283,7 +283,7 @@ function onDocumentMouseUp() {
     mouse.down = false;
     
     // Get side rotation
-    const rad = getObjectRotationInRad(sideGroup, movement['axis']);
+    const rad = getObjectRotationInRad(rotator, movement['axis']);
     
     // Exit if neither side has been turned or the cube is already rotating
     if ((rad == 0) || (rotate['rotate'] == true)) return;
@@ -314,15 +314,12 @@ function onDocumentMouseUp() {
 
 function currentObjectHover() {
     var ray = new THREE.Raycaster();
-    ray.setFromCamera({x: (mouse.x / window.innerWidth) * 2 - 1, y: -((mouse.y / window.innerHeight) * 2 - 1)}, camera);
+    ray.setFromCamera({x: ((mouse.x / window.innerWidth) * 2 - 1) * window.innerWidth / renderer.domElement.clientWidth, y: -((mouse.y / window.innerHeight) * 2 - 1) * window.innerHeight / renderer.domElement.clientHeight}, camera);
 
     // create an array containing all objects in the scene with which the ray intersects
     var intersects = ray.intersectObjects(scene.children);
 
     if (intersects.length > 0) {
-        if (intersects[1] != undefined && intersected != intersects[1].object) {
-            intersected = intersects[1].object;
-        };
         let firstIntersectedMiniCube = intersects[1];
         let sideIndex = intersects[0].faceIndex;
         if (sideIndex % 2 == 1) sideIndex -= 1;
