@@ -8,25 +8,16 @@ const cursor = document.querySelector('#cursor');
 const mouseLeft = document.querySelector('.mouse-icon#left');
 const mouseCenter = document.querySelector('.mouse-icon#center');
 const mouseRight = document.querySelector('.mouse-icon#right');
-const touch = document.querySelector('.mouse-icon#touch');
-const zoom = document.querySelector('.mouse-icon#zoom');
-const doubleTouch = document.querySelector('.mouse-icon#double-touch');
 const arrows = document.querySelector('#arrows');
 const buttonNext = document.querySelector('button#next');
-
-const desktopMode = !window.mobileCheck();
 
 class ManagementTraining {
     start() {
         // Add class "active" to elements for show them and start animation
         MTContainer.classList.add('active');
         buttonNext.classList.add('active');
-        if (desktopMode) {
-            cursor.classList.add('active');
-            mouseLeft.classList.add('active');
-        } else {
-            touch.classList.add('active');
-        }
+        cursor.classList.add('active');
+        mouseLeft.classList.add('active');
         
         // Continue after 400ms
         setTimeout(() => {
@@ -115,8 +106,7 @@ class ManagementTraining {
 };
 
 window.addEventListener("load", () => {
-    // if (localStorage.trained != "true") {
-    if (false) {
+    if (localStorage.trained != "true") {
         const managementTraining = new ManagementTraining();
         managementTraining.start();
         
