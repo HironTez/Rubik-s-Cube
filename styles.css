@@ -1,3 +1,8 @@
+:root {
+    --canvas-width: 1px;
+    --canvas-height: 1px;
+}
+
 html,
 body {
     margin: 0;
@@ -51,21 +56,32 @@ div#management-training > img.mouse-icon.move.active {
     -webkit-animation: move-mouse 1s ease-in-out infinite alternate;
 }
 
-div#management-training > img#cursor {
+div#management-training > img.cursor {
     display: none;
     position: absolute;
-    left: 40vw;
-    top: 50vh;
-    max-width: 5vw;
-    transform: translate(calc(-50% + 2.5vw), -50%);
-    -webkit-transform: translate(calc(-50% + 2.5vw), -50%);
-    -moz-transform: translate(calc(-50% + 2.5vw), -50%);
-    -ms-transform: translate(calc(-50% + 2.5vw), -50%);
-    -o-transform: translate(calc(-50% + 2.5vw), -50%);
+    left: 50vw;
+    top: calc(var(--canvas-height) / 100 * 40 + ((100vh - var(--canvas-height)) / 2));
+    max-width: calc(var(--canvas-width) / 100 * 7);
+    transform: translate(0, -50%);
+    -webkit-transform: translate(0, -50%);
+    -moz-transform: translate(0, -50%);
+    -ms-transform: translate(0, -50%);
+    -o-transform: translate(0, -50%);
 }
 
-div#management-training > img#cursor.active {
+div#management-training > img.cursor.touch-gestures {
+    transform: translate(-30%, -50%);
+    -webkit-transform: translate(-30%, -50%);
+    -moz-transform: translate(-30%, -50%);
+    -ms-transform: translate(-30%, -50%);
+    -o-transform: translate(-30%, -50%);
+}
+
+div#management-training > img.cursor.active {
     display: block;
+}
+
+div#management-training > img.cursor.active.move {
     animation: move-cursor 1s ease-in-out infinite alternate;
     -webkit-animation: move-cursor 1s ease-in-out infinite alternate;
 }
@@ -75,16 +91,21 @@ div#management-training > img#arrows {
     width: 40px;
     position: absolute;
     left: 50vw;
-    top: calc(78vh - 60px);
-    transform: translate(-50%);
-    -webkit-transform: translate(-50%);
-    -moz-transform: translate(-50%);
-    -ms-transform: translate(-50%);
-    -o-transform: translate(-50%);
+    top: calc(78vh - 40px);
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+}
+
+div#management-training > img.cursor.touch-gestures {
+    top: calc(var(--canvas-height) / 100 * 70 + ((100vh - var(--canvas-height)) / 2));
+    min-width: calc(var(--canvas-width) / 100 * 40);
 }
 
 div#management-training > img#arrows.active {
-    display: block;  
+    display: block;
 }
 
 div#management-training > button#next {
@@ -107,30 +128,30 @@ div#management-training > button#next.active {
 
 @keyframes move-cursor {
     0% {
-        left: 40%;
+        left: calc(var(--canvas-width) / 100 * 25 + ((100vw - var(--canvas-width)) / 2));
     }
     25% {
-        left: 40%;
+        left: calc(var(--canvas-width) / 100 * 25 + ((100vw - var(--canvas-width)) / 2));
     }
     75% {
-        left: 60%;
+        left: calc(var(--canvas-width) / 100 * 75 + ((100vw - var(--canvas-width)) / 2));
     }
     100% {
-        left: 60%;
+        left: calc(var(--canvas-width) / 100 * 75 + ((100vw - var(--canvas-width)) / 2));
     }
 }
 
 @keyframes move-mouse {
     0% {
-        left: 45%;
+        left: calc(var(--canvas-width) / 100 * 35 + ((100vw - var(--canvas-width)) / 2));
     }
     25% {
-        left: 45%;
+        left: calc(var(--canvas-width) / 100 * 35 + ((100vw - var(--canvas-width)) / 2));
     }
     75% {
-        left: 55%;
+        left: calc(var(--canvas-width) / 100 * 65 + ((100vw - var(--canvas-width)) / 2));
     }
     100% {
-        left: 55%;
+        left: calc(var(--canvas-width) / 100 * 65 + ((100vw - var(--canvas-width)) / 2));
     }
 }

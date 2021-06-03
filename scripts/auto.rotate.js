@@ -1,4 +1,4 @@
-import {rotate, rotateSide} from './rotate.js'
+import { rotate, rotateSide } from './rotate.js'
 
 
 let history = [], solveProcess = false;

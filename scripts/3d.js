@@ -10,7 +10,7 @@ let RubiksCube = [], scene, camera, renderer, controls, rotator, absoluteAxises;
 function init() {
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(50, 1, 1, 1000);
+    camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
     camera.position.z = 5;
     scene.add(camera);
 
@@ -54,7 +54,7 @@ function init() {
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    controls.minDistance = 6;
+    controls.minDistance = 7;
     controls.maxDistance = 10;
 
     controls.mouseButtons = {
@@ -71,12 +71,21 @@ function init() {
     const canvas = renderer.domElement;
     canvas.addEventListener('mousedown', onDocumentMouseDown);
     canvas.addEventListener('touchstart', onDocumentTouchDown);
-    canvas.addEventListener('mousemove', onDocumentMouseMove);
-    canvas.addEventListener('touchmove', onDocumentTouchMove);
-    canvas.addEventListener('mouseup', onDocumentMouseUp);
-    canvas.addEventListener('touchend', onDocumentMouseUp);
+    document.addEventListener('mousemove', onDocumentMouseMove);
+    document.addEventListener('touchmove', onDocumentTouchMove);
+    document.addEventListener('mouseup', onDocumentMouseUp);
+    document.addEventListener('touchend', onDocumentMouseUp);
 
     initCube();
+    
+    const root = document.querySelector(':root');
+    root.style.setProperty('--canvas-width', canvas.clientWidth + 'px');
+    root.style.setProperty('--canvas-height', canvas.clientHeight + 'px');
+    canvas.onresize = () => {
+        root.style.setProperty('--canvas-width', canvas.clientWidth + 'px');
+        root.style.setProperty('--canvas-height', canvas.clientHeight + 'px');
+    };
+    console.log(getComputedStyle(root).getPropertyValue('--canvas-width'));
 };
 
 function initCube() {
@@ -100,7 +109,7 @@ function initCube() {
 
         // Border
         const geo = new THREE.EdgesGeometry(cube.geometry);
-        const mat = new THREE.LineBasicMaterial({ color: 0x000000});
+        const mat = new THREE.LineBasicMaterial({ color: 0x000000 });
 
         const wireFrame = new THREE.LineSegments(geo, mat);
         cube.add(wireFrame);

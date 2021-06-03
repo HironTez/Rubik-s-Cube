@@ -4,14 +4,14 @@ import { camera, scene, RubiksCube, rotator, absoluteAxises, renderer } from './
 import { AddMoveToHistory } from './auto.rotate.js';
 
 let mouse = { x: 0, y: 0, down: false }, cubeSideToRotate,
-rotate = { 'rotate': false, 'clockwise': true, 'axis': 'y' },
-movement = {axisOfMovement: undefined, axis: 'y', oldPos: {x: null, y: null}, clockwise: true, cameraOnAxisZ: true}, speedRotate = 2.9;
+    rotate = { 'rotate': false, 'clockwise': true, 'axis': 'y' },
+    movement = { axisOfMovement: undefined, axis: 'y', oldPos: { x: null, y: null }, clockwise: true, cameraOnAxisZ: true }, speedRotate = 2.9;
 
 
 // Change speed rotate when slider is moved
-document.querySelector('input#speed').addEventListener("change", function() {
+document.querySelector('input#speed').addEventListener("change", function () {
     speedRotate = document.querySelector('input#speed').value;
-    speedRotate = speedRotate == 2? 2.9: (speedRotate == 1? 3.9: 1.9);
+    speedRotate = speedRotate == 2 ? 2.9 : (speedRotate == 1 ? 3.9 : 1.9);
 });
 
 
@@ -19,13 +19,13 @@ function rotateUpdate() {
     if (rotate['rotate'] == true) {
         let x = rotator.rotation[rotate['axis']];
         // x must be greater than 0
-        x = x != 0? (x > 0? x : -x): x + 0.01;
+        x = x != 0 ? (x > 0 ? x : -x) : x + 0.01;
         // Turning distance
         let rad = Math.sin(x * 2) / speedRotate;
-        
+
         // Determination of direction
         if (rotate['clockwise'] == false) rad = -rad;
-        
+
         // Rotate
         if (rotate['axis'] == 'x') rotator.rotateX(rad);
         else if (rotate['axis'] == 'y') rotator.rotateY(rad);
@@ -39,14 +39,14 @@ function rotateUpdate() {
     };
 };
 
-function setUpCubes(cube, center=false) {
+function setUpCubes(cube, center = false) {
     // Add mini cube to rotator
     rotator.add(cube);
 
     if (rotator.children.length == 9 || rotator.children.length == 8 && center) return true;
 };
 
-function rotateSide(side, clockwise=true, solve=false) {
+function rotateSide(side, clockwise = true, solve = false) {
     if (rotate['rotate'] == true) return;
 
     let rotation, axis;
@@ -111,12 +111,12 @@ function finishRotate() {
     for (var i = rotator.children.length - 1; i >= 0; i--) {
         // Get child
         let obj = rotator.children[i];
-        
+
         // Get object absolute position
         let absolutePosition = obj.getWorldPosition(absoluteAxises);
         // Save position
         obj.position.set(Math.round(absolutePosition.x), Math.round(absolutePosition.y), Math.round(absolutePosition.z));
-        
+
         // Get absolute rotation
         const euler = new THREE.Euler();
         euler.setFromRotationMatrix(obj.matrixWorld);
@@ -176,11 +176,11 @@ function onDocumentPointerMove(event) {
             let deviationInX = mouse.x - mouse.touchStartX;
             let deviationInY = mouse.y - mouse.touchStartY;
             if (deviationInX < 0) deviationInX = -deviationInX;
-            if (deviationInY < 0) deviationInY =  -deviationInY
+            if (deviationInY < 0) deviationInY = -deviationInY
             if (deviationInX + deviationInY >= 0.005) {
-                movement.axisOfMovement = deviationInX > deviationInY? 'x': 'y';
+                movement.axisOfMovement = deviationInX > deviationInY ? 'x' : 'y';
                 const pos = intersect[0].object.position;
-                const cameraOnAxisZ = ((camera.position.z > 0)? ((camera.position.x > 0)? (camera.position.z > camera.position.x): (camera.position.z > -camera.position.x)): ((camera.position.x > 0)? (-camera.position.z > camera.position.x): (-camera.position.z > -camera.position.x)));
+                const cameraOnAxisZ = ((camera.position.z > 0) ? ((camera.position.x > 0) ? (camera.position.z > camera.position.x) : (camera.position.z > -camera.position.x)) : ((camera.position.x > 0) ? (-camera.position.z > camera.position.x) : (-camera.position.z > -camera.position.x)));
 
                 // Detect which side need to rotate
                 if (movement.axisOfMovement == 'x') {
@@ -214,7 +214,7 @@ function onDocumentPointerMove(event) {
                 };
 
                 let axis;
-                let clockwise = movement.axisOfMovement == 'x'? (mouse.x - mouse.touchStartX) > 0: (mouse.y - mouse.touchStartY) > 0;
+                let clockwise = movement.axisOfMovement == 'x' ? (mouse.x - mouse.touchStartX) > 0 : (mouse.y - mouse.touchStartY) > 0;
                 for (const cube of RubiksCube) {
                     let x = cube.position.x,
                         y = cube.position.y,
@@ -259,8 +259,7 @@ function onDocumentPointerMove(event) {
             let deviationInX = mouse.x - movement.oldPos.x;
             let deviationInY = mouse.y - movement.oldPos.y;
             // Calculate rad to rotate
-            let rad = (movement['axis'] == 'y'? deviationInX:
-                ((movement['intersectSide'] == 2 || movement['intersectSide'] == 3) && movement['axisOfMovement'] == 'x'? deviationInX: deviationInY)) / (speedRotate == 2.9? 200: (speedRotate == 3.9? 300: 100));
+            let rad = (movement['axis'] == 'y' ? deviationInX : ((movement['intersectSide'] == 2 || movement['intersectSide'] == 3) && movement['axisOfMovement'] == 'x' ? deviationInX : deviationInY)) / (speedRotate == 2.9 ? smallestSide() / 3 : (speedRotate == 3.9 ? smallestSide() / 2 : smallestSide() / 4));
             // Set up rad
             if (movement['intersectSide'] == 5 && movement['axis'] == 'x') rad = -rad;
             else if ((movement['intersectSide'] == 0 || movement['intersectSide'] == 2) && movement['axis'] == 'z') rad = -rad;
@@ -281,32 +280,32 @@ function onDocumentPointerMove(event) {
 function onDocumentMouseUp() {
     // Stop rotate by mouse
     mouse.down = false;
-    
+
     // Get side rotation
     const rad = getObjectRotationInRad(rotator, movement['axis']);
-    
+
     // Exit if neither side has been turned or the cube is already rotating
     if ((rad == 0) || (rotate['rotate'] == true)) return;
-    
+
     // Calculate direction to complete movement
     let closestTarget = closest(rad, [0, Math.PI / 2, Math.PI, Math.PI * 1.5, Math.PI * 2]);
     if (closestTarget == Math.PI * 2) closestTarget = 0;
-    let rotateClockwise = closestTarget > rad? true: false;
+    let rotateClockwise = closestTarget > rad ? true : false;
     if (((closestTarget == 0) && (rad > Math.PI * 1.5)) || ((movement['axis'] != 'y') && (((closestTarget == Math.PI / 2) && (rad > closestTarget)) || (closestTarget == Math.PI) || ((closestTarget == Math.PI * 1.5) && (rad < closestTarget))))) rotateClockwise = !rotateClockwise;
-    
+
     // Set up rotator
     rotate['rotate'] = true;
     rotate['clockwise'] = rotateClockwise;
     rotate['axis'] = movement['axis'];
-    
+
     // Add move to history
     if ((closestTarget != 0) && (closestTarget != Math.PI * 2)) {
         // Calculate clockwise direction with triple rotation support
-        const newClockwise = (movement.axisOfMovement == 'x'? (mouse.x - mouse.touchStartX) > 0: (mouse.y - mouse.touchStartY) > 0) == (rad <= Math.PI)? movement['clockwise']: !movement['clockwise'];
+        const newClockwise = (movement.axisOfMovement == 'x' ? (mouse.x - mouse.touchStartX) > 0 : (mouse.y - mouse.touchStartY) > 0) == (rad <= Math.PI) ? movement['clockwise'] : !movement['clockwise'];
         // Add to history
         AddMoveToHistory([movement['side'], newClockwise, closestTarget == Math.PI]);
     };
-    
+
     // Reset value
     movement.axisOfMovement = undefined;
 };
@@ -314,7 +313,7 @@ function onDocumentMouseUp() {
 
 function currentObjectHover() {
     var ray = new THREE.Raycaster();
-    ray.setFromCamera({x: ((mouse.x / window.innerWidth) * 2 - 1) * window.innerWidth / renderer.domElement.clientWidth, y: -((mouse.y / window.innerHeight) * 2 - 1) * window.innerHeight / renderer.domElement.clientHeight}, camera);
+    ray.setFromCamera({ x: ((mouse.x / window.innerWidth) * 2 - 1) * window.innerWidth / renderer.domElement.clientWidth, y: -((mouse.y / window.innerHeight) * 2 - 1) * window.innerHeight / renderer.domElement.clientHeight }, camera);
 
     // create an array containing all objects in the scene with which the ray intersects
     var intersects = ray.intersectObjects(scene.children);
