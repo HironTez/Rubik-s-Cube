@@ -88,7 +88,7 @@ async function twistByFormula(formula) {
 
 function shuffle() {
     const scramble = generateScramble();
-    document.querySelector('div#scramble').innerText = scrambleToDisplayString(scramble);
+    document.querySelector('div#scramble').innerText = 'Scramble: ' + scrambleToDisplayString(scramble);
     twistByFormula(scramble);
 };
 

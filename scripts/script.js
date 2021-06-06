@@ -4,10 +4,10 @@ function sleep(ms) {
 };
 
 // Find closest value in array
-function closest(needle, haystack) {
-    return haystack.reduce((a, b) => {
-        let aDiff = Math.abs(a - needle);
-        let bDiff = Math.abs(b - needle);
+function closest(value, array) {
+    return array.reduce((a, b) => {
+        let aDiff = Math.abs(a - value);
+        let bDiff = Math.abs(b - value);
 
         if (aDiff == bDiff) {
             return a > b ? a : b;

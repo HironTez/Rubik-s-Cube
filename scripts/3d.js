@@ -14,7 +14,7 @@ function init() {
     camera.position.z = 5;
     scene.add(camera);
 
-    renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer = new THREE.WebGLRenderer({ canvas: document.getElementsByTagName('canvas')[0], alpha: true });
     const dimensions = aspectSize(window.innerWidth, window.innerHeight)
     renderer.setSize(dimensions.width, dimensions.height);
     
@@ -85,7 +85,6 @@ function init() {
         root.style.setProperty('--canvas-width', canvas.clientWidth + 'px');
         root.style.setProperty('--canvas-height', canvas.clientHeight + 'px');
     };
-    console.log(getComputedStyle(root).getPropertyValue('--canvas-width'));
 };
 
 function initCube() {

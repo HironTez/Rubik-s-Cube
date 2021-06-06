@@ -138,10 +138,12 @@ function finishRotate() {
 
 function onDocumentMouseDown(event) {
     if (event.which == 1) onDocumentPointerDown(event);
+    event.preventDefault();
 };
 
 function onDocumentTouchDown(event) {
     if (event.touches.length == 1) onDocumentPointerDown(event.touches[0]);
+    event.preventDefault();
 };
 
 function onDocumentPointerDown(touch) {
@@ -277,7 +279,7 @@ function onDocumentPointerMove(event) {
     };
 };
 
-function onDocumentMouseUp() {
+function onDocumentMouseUp(event) {
     // Stop rotate by mouse
     mouse.down = false;
 
@@ -308,6 +310,8 @@ function onDocumentMouseUp() {
 
     // Reset value
     movement.axisOfMovement = undefined;
+
+    event.preventDefault();
 };
 
 
