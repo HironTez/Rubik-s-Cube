@@ -1,7 +1,7 @@
 import { rotate, rotateSide } from './rotate.js'
 
 
-let history = [], solveProcess = false;
+let history = [], autoRotate = false, solve = false;
 const sides = ['r', 'l', 'u', 'd', 'f', 'b'], oppositeSides = ['lr', 'ud', 'fb'];
 
 // Add function for button "shuffle"
@@ -75,21 +75,30 @@ async function twistByFormula(formula) {
         while (rotate['rotate'] != false) await sleep(100);
         // If not double rotate
         if (!action[2]) {
-            rotateSide(action[0], action[1], solveProcess);
+            rotateSide(action[0], action[1], solve);
         }
         // If double rotate
         else if (action[2]) {
-            rotateSide(action[0], true, solveProcess);
+            rotateSide(action[0], true, solve);
             while (rotate['rotate'] != false) await sleep(100);
-            rotateSide(action[0], true, solveProcess);
+            rotateSide(action[0], true, solve);
         };
     };
 };
 
-function shuffle() {
+async function shuffle() {
+    // Exit if cube is currently rotating
+    if (autoRotate == true) return;
+    // Generate scramble
     const scramble = generateScramble();
+    // Show scramble
     document.querySelector('div#scramble').innerText = 'Scramble: ' + scrambleToDisplayString(scramble);
-    twistByFormula(scramble);
+    // Set a new value to the variable
+    autoRotate = true;
+    // Shuffle cube
+    await twistByFormula(scramble);
+    // Reset variable
+    autoRotate = false;
 };
 
 function AddMoveToHistory(move) {
@@ -150,8 +159,8 @@ function AddMoveToHistory(move) {
 };
 
 async function solveCube() {
-    // Exit if cube is currently being solved
-    if (solveProcess == true) return;
+    // Exit if cube is currently rotating
+    if (autoRotate == true) return;
     // Reverse history
     let formula;
     formula = history.reverse().slice();
@@ -162,13 +171,15 @@ async function solveCube() {
         };
     };
     // Set a new value to the variable
-    solveProcess = true;
+    autoRotate = true;
+    solve = true;
     // Rotates the sides of a cube using the formula
-    await twistByFormula(formula, true);
+    await twistByFormula(formula);
     // Clear history & reset variable
     history = [];
-    solveProcess = false;
+    autoRotate = false;
+    solve = false;
 };
 
 
-export { AddMoveToHistory, solveCube };
+export { AddMoveToHistory, solveCube, autoRotate };

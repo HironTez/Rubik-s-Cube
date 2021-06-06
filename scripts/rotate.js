@@ -1,7 +1,7 @@
 import * as THREE from './otherScripts/three.module.js';
 
 import { camera, scene, RubiksCube, rotator, absoluteAxises, renderer } from './3d.js';
-import { AddMoveToHistory } from './auto.rotate.js';
+import { AddMoveToHistory, autoRotate } from './auto.rotate.js';
 
 let mouse = { x: 0, y: 0, down: false }, cubeSideToRotate,
     rotate = { 'rotate': false, 'clockwise': true, 'axis': 'y' },
@@ -168,7 +168,7 @@ function onDocumentPointerMove(event) {
     mouse.x = event.clientX;
     mouse.y = event.clientY;
     // If mouse is down (drag) and nothing rotate
-    if (mouse.down == true && rotate['rotate'] == false) {
+    if (mouse.down == true && rotate['rotate'] == false && autoRotate == false) {
         // If axis of movement direction != undefined
         if (movement.axisOfMovement == undefined) {
             // Get data where the mouse is hovering
