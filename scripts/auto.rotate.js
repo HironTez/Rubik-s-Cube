@@ -52,20 +52,6 @@ function generateScramble() {
     return scramble;
 };
 
-function scrambleToDisplayString(scramble) {
-    let result = '';
-    for (let action of scramble) {
-        const side = action[0];
-        const clockWise = action[1];
-        const doubleRotation = action[2];
-        result += side;
-        if (doubleRotation) result += '2';
-        else if (!clockWise) result += '\'';
-        if (scramble.indexOf(action) < scramble.length - 1) result += ' ';
-    };
-    return result.toUpperCase();
-};
-
 /**
     @param {Array} formula
 */
@@ -91,8 +77,6 @@ async function shuffle() {
     if (autoRotate == true) return;
     // Generate scramble
     const scramble = generateScramble();
-    // Show scramble
-    document.querySelector('div#scramble').innerText = 'Scramble: ' + scrambleToDisplayString(scramble);
     // Set a new value to the variable
     autoRotate = true;
     // Shuffle cube

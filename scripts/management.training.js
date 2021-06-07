@@ -183,7 +183,8 @@ class ManagementTraining {
 };
 
 window.addEventListener("load", () => {
-    if (localStorage.trained != "true") {
+    // if (localStorage.trained != "true") {
+    if (true) {
         const managementTraining = new ManagementTraining();
         managementTraining.start();
 

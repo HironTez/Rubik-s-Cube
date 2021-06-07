@@ -39,29 +39,33 @@ canvas#Three-dimensional {
 div#ui-container {
     position: absolute;
     padding: 10px;
+    width: max-content;
 }
 
 button {
     cursor: pointer;
     border: 0;
-    width: calc(150px + (200 - 200) * ((100vw - 500px) / (1440 - 500)));
-    height: calc(35px + (50 - 40) * ((100vw - 125px) / (1440 - 125)));
-    border-radius: 1rem;
+    width: calc((100vw + 100vh) / 10);
+    height: calc((100vw + 100vh) / 40);
+    background: #efefef;
     box-shadow: 0.3rem 0.3rem 0.6rem #c8d0e7, -0.2rem -0.2rem 0.5rem #ffffff;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
+    margin: 5px;
+    font-size: calc((100vw + 100vh) / 70);
     transition: 0.3s ease;
     -webkit-transition: 0.3s ease;
     -moz-transition: 0.3s ease;
     -ms-transition: 0.3s ease;
     -o-transition: 0.3s ease;
-    margin: 5px;
-    font-size: calc(18px + (20 - 18) * ((100vw - 40px) / (1440 - 40)));
+    border-radius: calc((100vw + 100vh) / 100);
+    -webkit-border-radius: calc((100vw + 100vh) / 100);
+    -moz-border-radius: calc((100vw + 100vh) / 100);
+    -ms-border-radius: calc((100vw + 100vh) / 100);
+    -o-border-radius: calc((100vw + 100vh) / 100);
 }
 
 button:hover {
-    background: #c8d0e744;
+    background: #e4e4e4;
 }
 
 button:active {
@@ -73,18 +77,13 @@ div#slider {
     align-items: center;
     margin-left: 5px;
     margin-top: 5px;
-    font-size: calc(15px + (20 - 15) * ((100vw - 40px) / (1440 - 40)));
-}
-
-div#scramble {
-    margin-left: 5px;
-    font-size: calc(15px + (20 - 15) * ((100vw - 40px) / (1440 - 40)));
+    font-size: calc((100vw + 100vh) / 70);
 }
 
 input[type="range"] {
     cursor: pointer;
     -webkit-appearance: none;
-    background: (rgb(16, 16, 16), rgb(255, 255, 255));
+    background: transparent;
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -117,6 +116,7 @@ div#management-training {
     width: 100vw;
     height: 100vh;
     position: absolute;
+    overflow: hidden;
 }
 
 div#management-training.active {
@@ -198,8 +198,8 @@ div#management-training>button#next {
     position: absolute;
     left: 50%;
     bottom: 5vh;
-    width: 100px;
-    height: 40px;
+    width: calc((100vw + 100vh) / 10);
+    height: calc((100vw + 100vh) / 40);
     transform: translate(-50%);
     -webkit-transform: translate(-50%);
     -moz-transform: translate(-50%);
@@ -243,7 +243,7 @@ div#management-training>button#next.active {
 
 @media screen and (max-width: 700px) {
     div#ui-container {
-        display: inline-block;
+        width: max-content;
         text-align: center;
         left: 50%;
         transform: translate(-50%);
@@ -251,5 +251,9 @@ div#management-training>button#next.active {
         -moz-transform: translate(-50%);
         -ms-transform: translate(-50%);
         -o-transform: translate(-50%);
+    }
+
+    div#slider {
+        justify-content: center;
     }
 }
