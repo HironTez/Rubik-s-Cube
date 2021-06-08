@@ -147,6 +147,9 @@ function onDocumentTouchDown(event) {
 };
 
 function onDocumentPointerDown(touch) {
+    // Exit if the cursor is not over the cube
+    if (currentObjectHover() == undefined) return;
+    // Preparing for rotation
     mouse.down = true;
     mouse.x = touch.clientX;
     mouse.y = touch.clientY;
@@ -173,7 +176,7 @@ function onDocumentPointerMove(event) {
         if (movement.axisOfMovement == undefined) {
             // Get data where the mouse is hovering
             const intersect = currentObjectHover();
-            if (intersect == undefined) return
+            if (intersect == undefined) returnж
             const intersectSide = intersect[1];
             let deviationInX = mouse.x - mouse.touchStartX;
             let deviationInY = mouse.y - mouse.touchStartY;
