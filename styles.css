@@ -45,23 +45,23 @@ div#ui-container {
 button {
     cursor: pointer;
     border: 0;
-    width: calc((100vw + 100vh) / 10);
-    height: calc((100vw + 100vh) / 40);
+    width: calc(min(100vw, 100vh) / 5);
+    height: calc(min(100vw, 100vh) / 20);
     background: #efefef;
     box-shadow: 0.3rem 0.3rem 0.6rem #c8d0e7, -0.2rem -0.2rem 0.5rem #ffffff;
     cursor: pointer;
     margin: 5px;
-    font-size: calc((100vw + 100vh) / 70);
+    font-size: calc(min(100vw, 100vh) / 35);
     transition: 0.3s ease;
     -webkit-transition: 0.3s ease;
     -moz-transition: 0.3s ease;
     -ms-transition: 0.3s ease;
     -o-transition: 0.3s ease;
-    border-radius: calc((100vw + 100vh) / 100);
-    -webkit-border-radius: calc((100vw + 100vh) / 100);
-    -moz-border-radius: calc((100vw + 100vh) / 100);
-    -ms-border-radius: calc((100vw + 100vh) / 100);
-    -o-border-radius: calc((100vw + 100vh) / 100);
+    border-radius: calc(min(100vw, 100vh) / 50);
+    -webkit-border-radius: calc(min(100vw, 100vh) / 50);
+    -moz-border-radius: calc(min(100vw, 100vh) / 50);
+    -ms-border-radius: calc(min(100vw, 100vh) / 50);
+    -o-border-radius: calc(min(100vw, 100vh) / 50);
 }
 
 button:hover {
@@ -77,7 +77,7 @@ div#slider {
     align-items: center;
     margin-left: 5px;
     margin-top: 5px;
-    font-size: calc((100vw + 100vh) / 70);
+    font-size: calc(min(100vw, 100vh) / 35);
 }
 
 input[type="range"] {
@@ -198,8 +198,8 @@ div#management-training>button#next {
     position: absolute;
     left: 50%;
     bottom: 5vh;
-    width: calc((100vw + 100vh) / 10);
-    height: calc((100vw + 100vh) / 40);
+    width: calc(min(100vw, 100vh) / 5);
+    height: calc(min(100vw, 100vh) / 20);
     transform: translate(-50%);
     -webkit-transform: translate(-50%);
     -moz-transform: translate(-50%);
