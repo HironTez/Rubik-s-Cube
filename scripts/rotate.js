@@ -3,7 +3,7 @@ import * as THREE from './otherScripts/three.module.js';
 import { camera, scene, RubiksCube, rotator, absoluteAxises, renderer } from './3d.js';
 import { AddMoveToHistory, autoRotate } from './auto.rotate.js';
 
-let mouse = { x: 0, y: 0, down: false }, cubeSideToRotate,
+let mouse = { x: 0, y: 0, down: false, downTime: null, touchStartX: 0, touchStartY: 0 }, cubeSideToRotate,
     rotate = { 'rotate': false, 'clockwise': true, 'axis': 'y' },
     movement = { axisOfMovement: undefined, axis: 'y', oldPos: { x: null, y: null }, clockwise: true, cameraOnAxisZ: true }, speedRotate = 2.9;
 
@@ -151,6 +151,7 @@ function onDocumentPointerDown(touch) {
     if (currentObjectHover() == undefined) return;
     // Preparing for rotation
     mouse.down = true;
+    mouse.downTime = Date.now();
     mouse.x = touch.clientX;
     mouse.y = touch.clientY;
     mouse.touchStartX = mouse.x;
@@ -176,7 +177,7 @@ function onDocumentPointerMove(event) {
         if (movement.axisOfMovement == undefined) {
             // Get data where the mouse is hovering
             const intersect = currentObjectHover();
-            if (intersect == undefined) returnж
+            if (intersect == undefined) return;
             const intersectSide = intersect[1];
             let deviationInX = mouse.x - mouse.touchStartX;
             let deviationInY = mouse.y - mouse.touchStartY;
@@ -293,8 +294,14 @@ function onDocumentMouseUp(event) {
     if ((rad == 0) || (rotate['rotate'] == true)) return;
 
     // Calculate direction to complete movement
+    // Calculate closest target
     let closestTarget = closest(rad, [0, Math.PI / 2, Math.PI, Math.PI * 1.5, Math.PI * 2]);
-    if (closestTarget == Math.PI * 2) closestTarget = 0;
+    // If the rotation was fast and not small
+    if (mouse.downTime + 300 > Date.now() && getDistance(mouse.touchStartX, mouse.touchStartY, mouse.x, mouse.y) > 60) {
+        // Calculate closest target except for the initial
+        closestTarget = closest(rad, [Math.PI / 2, Math.PI, Math.PI * 1.5]);
+    };
+    // Calculate direction
     let rotateClockwise = closestTarget > rad ? true : false;
     if (((closestTarget == 0) && (rad > Math.PI * 1.5)) || ((movement['axis'] != 'y') && (((closestTarget == Math.PI / 2) && (rad > closestTarget)) || (closestTarget == Math.PI) || ((closestTarget == Math.PI * 1.5) && (rad < closestTarget))))) rotateClockwise = !rotateClockwise;
 
@@ -307,12 +314,15 @@ function onDocumentMouseUp(event) {
     if ((closestTarget != 0) && (closestTarget != Math.PI * 2)) {
         // Calculate clockwise direction with triple rotation support
         const newClockwise = (movement.axisOfMovement == 'x' ? (mouse.x - mouse.touchStartX) > 0 : (mouse.y - mouse.touchStartY) > 0) == (rad <= Math.PI) ? movement['clockwise'] : !movement['clockwise'];
+        // Double move or not
+        const doubleMove = closestTarget == Math.PI;
         // Add to history
-        AddMoveToHistory([movement['side'], newClockwise, closestTarget == Math.PI]);
+        AddMoveToHistory([movement['side'], newClockwise, doubleMove]);
     };
 
     // Reset value
     movement.axisOfMovement = undefined;
+    mouse.downTime = null;
 
     event.preventDefault();
 };

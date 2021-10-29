@@ -147,7 +147,7 @@ async function solveCube() {
     if (autoRotate == true) return;
     // Reverse history
     let formula;
-    formula = history.reverse().slice();
+    formula = history.slice().reverse();
     // Reverse direction of turns
     for (let move of formula) {
         if (move[2] == false) {
