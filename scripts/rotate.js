@@ -147,8 +147,8 @@ function onDocumentTouchDown(event) {
 };
 
 function onDocumentPointerDown(touch) {
-    // Exit if the cursor is not over the cube
-    if (currentObjectHover() == undefined) return;
+    // Exit if the cursor is not over the cube or it's already rotates
+    if (currentObjectHover() == undefined || rotate['rotate'] == true || autoRotate == true) return;
     // Preparing for rotation
     mouse.down = true;
     mouse.downTime = Date.now();
@@ -172,7 +172,7 @@ function onDocumentPointerMove(event) {
     mouse.x = event.clientX;
     mouse.y = event.clientY;
     // If mouse is down (drag) and nothing rotate
-    if (mouse.down == true && rotate['rotate'] == false && autoRotate == false) {
+    if (mouse.down == true) {
         // If axis of movement direction != undefined
         if (movement.axisOfMovement == undefined) {
             // Get data where the mouse is hovering
@@ -220,7 +220,7 @@ function onDocumentPointerMove(event) {
                 };
 
                 let axis;
-                let clockwise = movement.axisOfMovement == 'x' ? (mouse.x - mouse.touchStartX) > 0 : (mouse.y - mouse.touchStartY) > 0;
+                let clockwise;
                 for (const cube of RubiksCube) {
                     let x = cube.position.x,
                         y = cube.position.y,
@@ -283,7 +283,7 @@ function onDocumentPointerMove(event) {
     };
 };
 
-function onDocumentMouseUp(event) {
+function onDocumentPointerUp(event) {
     // Stop rotate by mouse
     mouse.down = false;
 
@@ -313,7 +313,8 @@ function onDocumentMouseUp(event) {
     // Add move to history
     if ((closestTarget != 0) && (closestTarget != Math.PI * 2)) {
         // Calculate clockwise direction with triple rotation support
-        const newClockwise = (movement.axisOfMovement == 'x' ? (mouse.x - mouse.touchStartX) > 0 : (mouse.y - mouse.touchStartY) > 0) == (rad <= Math.PI) ? movement['clockwise'] : !movement['clockwise'];
+        const clockwise = !movement['clockwise'] == (movement.axisOfMovement == 'x' ? (mouse.x - mouse.touchStartX) > 0 : (mouse.y - mouse.touchStartY) > 0);
+        const newClockwise = (movement.axisOfMovement == 'x' ? (mouse.x - mouse.touchStartX) > 0 : (mouse.y - mouse.touchStartY) > 0) == (rad <= Math.PI) ? clockwise : !clockwise;
         // Double move or not
         const doubleMove = closestTarget == Math.PI;
         // Add to history
@@ -353,4 +354,4 @@ function getObjectRotationInRad(obj, axis) {
 };
 
 
-export { rotateUpdate, onDocumentMouseDown, onDocumentTouchDown, onDocumentMouseMove, onDocumentTouchMove, onDocumentMouseUp, rotate, rotateSide };
+export { rotateUpdate, onDocumentMouseDown, onDocumentTouchDown, onDocumentMouseMove, onDocumentTouchMove, onDocumentPointerUp, rotate, rotateSide };

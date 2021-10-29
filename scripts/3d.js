@@ -1,7 +1,7 @@
 import * as THREE from './otherScripts/three.module.js';
 import { OrbitControls } from './otherScripts/OrbitControls.js';
 
-import { rotateUpdate, onDocumentMouseDown, onDocumentTouchDown, onDocumentMouseMove, onDocumentTouchMove, onDocumentMouseUp } from './rotate.js';
+import { rotateUpdate, onDocumentMouseDown, onDocumentTouchDown, onDocumentMouseMove, onDocumentTouchMove, onDocumentPointerUp } from './rotate.js';
 
 
 let RubiksCube = [], scene, camera, renderer, controls, rotator, absoluteAxises;
@@ -73,8 +73,8 @@ function init() {
     canvas.addEventListener('touchstart', onDocumentTouchDown);
     document.addEventListener('mousemove', onDocumentMouseMove);
     document.addEventListener('touchmove', onDocumentTouchMove);
-    document.addEventListener('mouseup', onDocumentMouseUp);
-    document.addEventListener('touchend', onDocumentMouseUp);
+    document.addEventListener('mouseup', onDocumentPointerUp);
+    document.addEventListener('touchend', onDocumentPointerUp);
 
     initCube();
     
