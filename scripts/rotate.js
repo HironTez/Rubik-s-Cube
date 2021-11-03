@@ -350,9 +350,7 @@ function currentObjectHover() {
 
     // create an array containing all objects in the scene with which the ray intersects
     var intersects = ray.intersectObjects(scene.children);
-    console.log(intersects);
-    console.log({ x: ((mouse.x / window.innerWidth) * 2 - 1) * window.innerWidth / renderer.domElement.clientWidth, y: -((mouse.y / window.innerHeight) * 2 - 1) * window.innerHeight / renderer.domElement.clientHeight });
-
+    
     if (intersects.length > 0) {
         let firstIntersectedMiniCube = intersects[1];
         let sideIndex = intersects[0].faceIndex;
