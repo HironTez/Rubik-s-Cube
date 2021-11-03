@@ -2,6 +2,7 @@ import * as THREE from './otherScripts/three.module.js';
 import { OrbitControls } from './otherScripts/OrbitControls.js';
 
 import { rotateUpdate, onDocumentMouseDown, onDocumentTouchDown, onDocumentMouseMove, onDocumentTouchMove, onDocumentPointerUp } from './rotate.js';
+import { RoundedBoxGeometry } from './otherScripts/RoundedBoxGeometry.js';
 
 
 let RubiksCube = [], scene, camera, renderer, controls, rotator, absoluteAxises;
@@ -99,19 +100,12 @@ function initCube() {
         'gray': new THREE.MeshPhongMaterial({ color: 0xdddddd, polygonOffset: true, polygonOffsetUnits: 1000 })
     };
 
-    const geometry = new THREE.BoxGeometry();
+    const geometry = new RoundedBoxGeometry(1, 1, 1, 2, 0.05);
 
     function createCube(position, materials) {
         const cube = new THREE.Mesh(geometry, materials);
         scene.add(cube);
         cube.position.set(...position);
-
-        // Border
-        const geo = new THREE.EdgesGeometry(cube.geometry);
-        const mat = new THREE.LineBasicMaterial({ color: 0x000000 });
-
-        const wireFrame = new THREE.LineSegments(geo, mat);
-        cube.add(wireFrame);
 
         return cube;
     };
@@ -189,7 +183,7 @@ function initCube() {
 
     // Create object for rotate a group of objects
     rotator = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0, transparent: true }));
-    rotator.scale.set(3.001, 3.001, 3.001);
+    rotator.scale.set(3.1, 3.1, 3.1);
     scene.add(rotator);
 };
 

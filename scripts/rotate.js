@@ -24,7 +24,7 @@ function rotateUpdate() {
         let rad = Math.sin(x * 2) / speedRotate;
 
         // Determination of direction
-        if (rotate['clockwise'] == false) rad = -rad;
+        if (!rotate['clockwise']) rad = -rad;
 
         // Rotate
         if (rotate['axis'] == 'x') rotator.rotateX(rad);
@@ -39,11 +39,11 @@ function rotateUpdate() {
     };
 };
 
-function setUpCubes(cube, center = false) {
+function prepairCube(cube, center = false) {
     // Add mini cube to rotator
     rotator.add(cube);
 
-    if (rotator.children.length == 9 || rotator.children.length == 8 && center) return true;
+    if (rotator.children.length == 9 || (rotator.children.length == 8 && center)) return true;
 };
 
 function rotateSide(side, clockwise = true, solve = false) {
@@ -63,28 +63,28 @@ function rotateSide(side, clockwise = true, solve = false) {
             y = cube.position.y,
             z = cube.position.z;
         // Set up cube
-        if (side == 'u' && y == 1 && setUpCubes(cube)) {
+        if (side == 'u' && y == 1 && prepairCube(cube)) {
             clockwise = !clockwise;
             axis = 'y';
-        } else if (side == 'f' && z == 1 && setUpCubes(cube)) {
+        } else if (side == 'f' && z == 1 && prepairCube(cube)) {
             clockwise = !clockwise;
             axis = 'z';
-        } else if (side == 'r' && x == 1 && setUpCubes(cube)) {
+        } else if (side == 'r' && x == 1 && prepairCube(cube)) {
             clockwise = !clockwise;
             axis = 'x';
-        } else if (side == 'b' && z == -1 && setUpCubes(cube)) {
+        } else if (side == 'b' && z == -1 && prepairCube(cube)) {
             axis = 'z';
-        } else if (side == 'l' && x == -1 && setUpCubes(cube)) {
+        } else if (side == 'l' && x == -1 && prepairCube(cube)) {
             axis = 'x';
-        } else if (side == 'd' && y == -1 && setUpCubes(cube)) {
+        } else if (side == 'd' && y == -1 && prepairCube(cube)) {
             axis = 'y';
-        } else if (side == 'centerXY' && z == 0 && setUpCubes(cube, true)) {
+        } else if (side == 'centerXY' && z == 0 && prepairCube(cube, true)) {
             clockwise = !clockwise;
             axis = 'z';
-        } else if (side == 'centerXZ' && y == 0 && setUpCubes(cube, true)) {
+        } else if (side == 'centerXZ' && y == 0 && prepairCube(cube, true)) {
             clockwise = !clockwise;
             axis = 'y';
-        } else if (side == 'centerYZ' && x == 0 && setUpCubes(cube, true)) {
+        } else if (side == 'centerYZ' && x == 0 && prepairCube(cube, true)) {
             axis = 'x';
         };
     }
@@ -132,7 +132,7 @@ function finishRotate() {
     // Remove rotator rotation
     rotator.rotation.set(0, 0, 0);
     // Enlarge rotator
-    rotator.scale.set(3.001, 3.001, 3.001);
+    rotator.scale.set(3.1, 3.1, 3.1);
 };
 
 
@@ -178,7 +178,7 @@ function onDocumentPointerMove(event) {
             // Get data where the mouse is hovering
             const intersect = currentObjectHover();
             if (intersect == undefined) return;
-            const intersectSide = intersect[1];
+            const intersectSide = intersect[1];;
             let deviationInX = mouse.x - mouse.touchStartX;
             let deviationInY = mouse.y - mouse.touchStartY;
             if (deviationInX < 0) deviationInX = -deviationInX;
@@ -188,31 +188,36 @@ function onDocumentPointerMove(event) {
                 const pos = intersect[0].object.position;
                 const cameraOnAxisZ = ((camera.position.z > 0) ? ((camera.position.x > 0) ? (camera.position.z > camera.position.x) : (camera.position.z > -camera.position.x)) : ((camera.position.x > 0) ? (-camera.position.z > camera.position.x) : (-camera.position.z > -camera.position.x)));
 
+                const redSide = intersectSide <= 22;
+                const orangeSide = intersectSide > 22 && intersectSide <= 47;
+                const whiteSide = intersectSide > 47 && intersectSide <= 72;
+                const yellowSide = intersectSide > 72 && intersectSide <= 97;
+
                 // Detect which side need to rotate
                 if (movement.axisOfMovement == 'x') {
-                    if (intersectSide != 2 && intersectSide != 3) {
+                    if (!whiteSide && !yellowSide) {
                         if (pos.y == 1) cubeSideToRotate = 'u';
                         else if (pos.y == 0) cubeSideToRotate = 'centerXZ';
                         else if (pos.y == -1) cubeSideToRotate = 'd';
-                    } else if ((intersectSide == 2 || intersectSide == 3) && cameraOnAxisZ) {
+                    } else if ((whiteSide || yellowSide) && cameraOnAxisZ) {
                         if (pos.z == 1) cubeSideToRotate = 'f';
                         else if (pos.z == 0) cubeSideToRotate = 'centerXY';
                         else if (pos.z == -1) cubeSideToRotate = 'b';
-                    } else if ((intersectSide == 2 || intersectSide == 3) && !cameraOnAxisZ) {
+                    } else if ((whiteSide || yellowSide) && !cameraOnAxisZ) {
                         if (pos.x == -1) cubeSideToRotate = 'l';
                         else if (pos.x == 0) cubeSideToRotate = 'centerYZ';
                         else if (pos.x == 1) cubeSideToRotate = 'r';
                     }
                 } else if (movement.axisOfMovement == 'y') {
-                    if (intersectSide != 0 && intersectSide != 1 && !((intersectSide == 2 || intersectSide == 3) && !cameraOnAxisZ)) {
+                    if (!redSide && !orangeSide && !((whiteSide || yellowSide) && !cameraOnAxisZ)) {
                         if (pos.x == -1) cubeSideToRotate = 'l';
                         else if (pos.x == 0) cubeSideToRotate = 'centerYZ';
                         else if (pos.x == 1) cubeSideToRotate = 'r';
-                    } else if ((intersectSide == 0 || intersectSide == 1)) {
+                    } else if ((redSide || orangeSide)) {
                         if (pos.z == 1) cubeSideToRotate = 'f';
                         else if (pos.z == 0) cubeSideToRotate = 'centerXY';
                         else if (pos.z == -1) cubeSideToRotate = 'b';
-                    } else if ((intersectSide == 2 || intersectSide == 3) && !cameraOnAxisZ) {
+                    } else if ((whiteSide || yellowSide) && !cameraOnAxisZ) {
                         if (pos.z == 1) cubeSideToRotate = 'f';
                         else if (pos.z == 0) cubeSideToRotate = 'centerXY';
                         else if (pos.z == -1) cubeSideToRotate = 'b';
@@ -226,28 +231,28 @@ function onDocumentPointerMove(event) {
                         y = cube.position.y,
                         z = cube.position.z;
                     // Set up cube
-                    if (cubeSideToRotate == 'u' && y == 1 && setUpCubes(cube)) {
+                    if (cubeSideToRotate == 'u' && y == 1 && prepairCube(cube)) {
                         clockwise = !clockwise;
                         axis = 'y';
-                    } else if (cubeSideToRotate == 'f' && z == 1 && setUpCubes(cube)) {
+                    } else if (cubeSideToRotate == 'f' && z == 1 && prepairCube(cube)) {
                         clockwise = !clockwise;
                         axis = 'z';
-                    } else if (cubeSideToRotate == 'r' && x == 1 && setUpCubes(cube)) {
+                    } else if (cubeSideToRotate == 'r' && x == 1 && prepairCube(cube)) {
                         clockwise = !clockwise;
                         axis = 'x';
-                    } else if (cubeSideToRotate == 'b' && z == -1 && setUpCubes(cube)) {
+                    } else if (cubeSideToRotate == 'b' && z == -1 && prepairCube(cube)) {
                         axis = 'z';
-                    } else if (cubeSideToRotate == 'l' && x == -1 && setUpCubes(cube)) {
+                    } else if (cubeSideToRotate == 'l' && x == -1 && prepairCube(cube)) {
                         axis = 'x';
-                    } else if (cubeSideToRotate == 'd' && y == -1 && setUpCubes(cube)) {
+                    } else if (cubeSideToRotate == 'd' && y == -1 && prepairCube(cube)) {
                         axis = 'y';
-                    } else if (cubeSideToRotate == 'centerXY' && z == 0 && setUpCubes(cube, true)) {
+                    } else if (cubeSideToRotate == 'centerXY' && z == 0 && prepairCube(cube, true)) {
                         clockwise = !clockwise;
                         axis = 'z';
-                    } else if (cubeSideToRotate == 'centerXZ' && y == 0 && setUpCubes(cube, true)) {
+                    } else if (cubeSideToRotate == 'centerXZ' && y == 0 && prepairCube(cube, true)) {
                         clockwise = !clockwise;
                         axis = 'y';
-                    } else if (cubeSideToRotate == 'centerYZ' && x == 0 && setUpCubes(cube, true)) {
+                    } else if (cubeSideToRotate == 'centerYZ' && x == 0 && prepairCube(cube, true)) {
                         axis = 'x';
                     };
                 };
@@ -264,13 +269,22 @@ function onDocumentPointerMove(event) {
             // Calculate mouse deviation
             let deviationInX = mouse.x - movement.oldPos.x;
             let deviationInY = mouse.y - movement.oldPos.y;
+
+            // Set variables
+            const redSide = movement['intersectSide'] <= 22;
+            const whiteSide = movement['intersectSide'] > 47 && movement['intersectSide'] <= 72;
+            const yellowSide = movement['intersectSide'] > 72 && movement['intersectSide'] <= 97;
+            const blueSide = movement['intersectSide'] > 122 && movement['intersectSide'] <= 147;
+            
             // Calculate rad to rotate
-            let rad = (movement['axis'] == 'y' ? deviationInX : ((movement['intersectSide'] == 2 || movement['intersectSide'] == 3) && movement['axisOfMovement'] == 'x' ? deviationInX : deviationInY)) / (speedRotate == 2.9 ? smallestSide() / 3 : (speedRotate == 3.9 ? smallestSide() / 2 : smallestSide() / 4));
+            let rad = (movement['axis'] == 'y' ? deviationInX : ((whiteSide || yellowSide) && movement['axisOfMovement'] == 'x' ? deviationInX : deviationInY)) / (speedRotate == 2.9 ? smallestSide() / 3 : (speedRotate == 3.9 ? smallestSide() / 2 : smallestSide() / 4));
+            
             // Set up rad
-            if (movement['intersectSide'] == 5 && movement['axis'] == 'x') rad = -rad;
-            else if ((movement['intersectSide'] == 0 || movement['intersectSide'] == 2) && movement['axis'] == 'z') rad = -rad;
-            if (movement['intersectSide'] == 2 && ((!movement['cameraOnAxisZ'] && ((movement['axis'] == 'x' && camera.position.x > 0) || (movement['axis'] == 'z' && camera.position.x < 0)) || (movement['cameraOnAxisZ'] && camera.position.z < 0)))) rad = -rad;
-            else if (movement['intersectSide'] == 3 && ((!movement['cameraOnAxisZ'] && ((movement['axis'] == 'z' && camera.position.x > 0) || (movement['axis'] == 'x' && camera.position.x < 0)) || (movement['cameraOnAxisZ'] && camera.position.z < 0)))) rad = -rad;
+            if (blueSide && movement['axis'] == 'x') rad = -rad;
+            else if ((redSide || whiteSide) && movement['axis'] == 'z') rad = -rad;
+            if (whiteSide && ((!movement['cameraOnAxisZ'] && ((movement['axis'] == 'x' && camera.position.x > 0) || (movement['axis'] == 'z' && camera.position.x < 0)) || (movement['cameraOnAxisZ'] && camera.position.z < 0)))) rad = -rad;
+            else if (yellowSide && ((!movement['cameraOnAxisZ'] && ((movement['axis'] == 'z' && camera.position.x > 0) || (movement['axis'] == 'x' && camera.position.x < 0)) || (movement['cameraOnAxisZ'] && camera.position.z < 0)))) rad = -rad;
+            
             // Rotate
             if (movement['axis'] == 'x') rotator.rotateX(rad);
             else if (movement['axis'] == 'y') rotator.rotateY(rad);
