@@ -102,6 +102,7 @@ function initCube() {
 
     const geometry = new RoundedBoxGeometry(1, 1, 1, 2, 0.05);
 
+    // Create mini-cube
     function createCube(position, materials) {
         const cube = new THREE.Mesh(geometry, materials);
         scene.add(cube);
@@ -110,6 +111,7 @@ function initCube() {
         return cube;
     };
 
+    // Set of coordinates of all cubes
     const cords = [
         [1, 0, 0],
         [-1, 0, 0],

@@ -14,7 +14,8 @@ const doubleTouch = document.querySelector('.cursor#double-touch');
 const arrows = document.querySelector('#arrows');
 const buttonNext = document.querySelector('button#next');
 
-const desktopMode = !window.mobileCheck();
+const desktopMode = !window.isMobile();
+
 
 class ManagementTraining {
     start() {
